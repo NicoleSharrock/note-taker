@@ -1,8 +1,10 @@
 const PORT = process.env.PORT || 3000;
 const fs = require('fs');
 const path = require('path');
+
 const express = require('express')
 const app = express();
+
 const noteData = require('./db/db.json');
 
 
@@ -11,21 +13,28 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(express.static('public'));
 
-// route to main page
-app.get('*', function (req, res) {
-    res.sendFile(path.join(__dirname, 'public/index.html'));
-});
-
-
-// route to notes.html
-app.get('/notes', function (req, res) {
-    res.sendFile(path.join(__dirname, 'public/notes.html'));
-});
 
 // route to save all notes as json
 app.get('/api/notes', (req, res) => {
     res.json(noteData.slice(1));
 });
+
+
+// route to main page
+app.get('/', function (req, res) {
+    res.sendFile(path.join(__dirname, './public/index.html'));
+});
+
+
+// route to notes.html
+app.get('/notes', function (req, res) {
+    res.sendFile(path.join(__dirname, './public/notes.html'));
+});
+
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, './public/index.html'));
+});
+
 
 function createNewNote(body, notesArray) {
     const newNote = body;
@@ -47,9 +56,10 @@ function createNewNote(body, notesArray) {
 }
 
 app.post('/api/notes', (req, res) => {
-    const newNote = createNewNote(req.body, allNotes);
+    const newNote = createNewNote(req.body, noteData);
     res.json(newNote);
 });
+
 
 
 
