@@ -31,10 +31,6 @@ app.get('/notes', function (req, res) {
     res.sendFile(path.join(__dirname, './public/notes.html'));
 });
 
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, './public/index.html'));
-});
-
 
 function createNewNote(body, notesArray) {
     const newNote = body;
@@ -80,6 +76,11 @@ function deleteNote(id, notesArray) {
 app.delete('/api/notes/:id', (req, res) => {
     deleteNote(req.params.id, noteData);
     res.json(true);
+});
+
+
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, './public/index.html'));
 });
 
 
