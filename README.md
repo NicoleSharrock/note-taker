@@ -22,5 +22,5 @@ AS a small business owner I want to be able to write and save notes so that I ca
 
 
 ## Preview:
-![screenrecording]() 
+![screenshot]() 
 
