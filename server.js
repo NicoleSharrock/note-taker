@@ -62,29 +62,18 @@ app.post('/api/notes', (req, res) => {
 
 
 app.delete("/api/notes/:id", (req, res) => {
-    let noteToDelete = req.params.id;
+    let noteList = JSON.parse(fs.readFileSync("./db/db.json", "utf8"));
+    let noteId = (req.params.id).toString();
 
-    fs.readFile(__dirname + "/db/db.json", (err, data) => {
-        if (err) {
-            throw err;
-        }
-        let json = JSON.parse(data);
-
-        for (let i = 0; i < json.length; i++) {
-            if (json[i].id === noteToDelete) {
-                json.splice(i, 1);
-            }
-        }
-
-        fs.writeFile(__dirname + "/db/db.json", JSON.stringify(json), (err) => {
-            if (err) {
-                throw err;
-            }
-            res.send("Successfully deleted");
-        })
-
+    //filter all notes that does not have matching id and saved them as a new array
+    //the matching array will be deleted
+    noteList = noteList.filter(selected => {
+        return selected.id != noteId;
     })
 
+    //write the updated data to db.json and display the updated note
+    fs.writeFileSync("./db/db.json", JSON.stringify(noteList));
+    res.json(noteList);
 });
 
 // function deleteNote(id, notesArray) {
