@@ -61,28 +61,52 @@ app.post('/api/notes', (req, res) => {
 });
 
 
-function deleteNote(id, notesArray) {
-    for (let i = 0; i < notesArray.length; i++) {
-        let note = notesArray[i];
+app.delete("/api/notes/:id", (req, res) => {
+    let noteToDelete = req.params.id;
 
-        if (note.id == id) {
-            notesArray.splice(i, 1);
-            fs.writeFileSync(
-                path.join(__dirname, './db/db.json'),
-                JSON.stringify(notesArray, null, 2)
-            );
-
-            break;
+    fs.readFile(__dirname + "/db/db.json", (err, data) => {
+        if (err) {
+            throw err;
         }
-    }
-}
+        let json = JSON.parse(data);
 
-app.delete('/api/notes/:id', (req, res) => {
-    deleteNote(req.params.id, noteData);
-    res.json(true);
+        for (let i = 0; i < json.length; i++) {
+            if (json[i].id === noteToDelete) {
+                json.splice(i, 1);
+            }
+        }
+
+        fs.writeFile(__dirname + "/db/db.json", JSON.stringify(json), (err) => {
+            if (err) {
+                throw err;
+            }
+            res.send("Successfully deleted");
+        })
+
+    })
+
 });
 
+// function deleteNote(id, notesArray) {
+//     for (let i = 0; i < notesArray.length; i++) {
+//         let note = notesArray[i];
+
+//         if (note.id == id) {
+//             notesArray.splice(i, 1);
+//             fs.writeFileSync(
+//                 path.join(__dirname, './db/db.json'),
+//                 JSON.stringify(notesArray, null, 2)
+//             );
+
+//             break;
+//         }
+//     }
+// }
+
+// app.delete('/api/notes/:id', (req, res) => {
+//     deleteNote(req.params.id, noteData);
+//     res.json(true);
+// });
 
 
-
-app.listen(PORT, () => console.log(`Listening on port ${PORT}`));
+app.listen(PORT, () => console.log(`Listening on port http://localhost:${PORT}`));
