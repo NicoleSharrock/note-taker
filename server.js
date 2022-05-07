@@ -14,12 +14,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 
 
-// route to save all notes as json
-app.get('/api/notes', (req, res) => {
-    res.json(noteData.slice(1));
-});
-
-
 // route to main page
 app.get('/', function (req, res) {
     res.sendFile(path.join(__dirname, './public/index.html'));
@@ -32,56 +26,57 @@ app.get('/notes', function (req, res) {
 });
 
 
-function createNewNote(body, notesArray) {
-    const newNote = body;
-    if (!Array.isArray(notesArray))
-        notesArray = [];
+app.route("/api/notes")
+app.get(function (req, res) {
+    res.json(database);
+})
 
-    if (notesArray.length === 0)
-        notesArray.push(0);
+app.post(function (req, res) {
+    let jsonPath = path.json(__dirname, './db/db.json');
+    let newNote = req.body;
+    let highestId = 99;
+    for (let i = 0; i < database.length; i++) {
+        let oneNote = database[1];
+        if (oneNote.id > highestId) {
+            highestId = oneNote.id;
+        }
+    }
 
-    body.id = notesArray[0];
-    notesArray[0]++;
+    newNote.id = highestId = 1;
+    database.push(newNote)
+    fs.writeFile(jsonPath, JSON.stringify(database), function (err) {
+        if (err) {
+            return console.log(err);
+        }
+        console.log('Note saved!');
+    });
 
-    notesArray.push(newNote);
-    fs.writeFileSync(
-        path.join(__dirname, './db/db.json'),
-        JSON.stringify(notesArray, null, 2)
-    );
-    return newNote;
-}
-
-app.post('/api/notes', (req, res) => {
-    const newNote = createNewNote(req.body, noteData);
     res.json(newNote);
-});
+})
 
 
-function deleteNote(id, notesArray) {
-    for (let i = 0; i < notesArray.length; i++) {
-        let note = notesArray[i];
 
-        if (note.id == id) {
-            notesArray.splice(i, 1);
-            fs.writeFileSync(
-                path.join(__dirname, './db/db.json'),
-                JSON.stringify(notesArray, null, 2)
-            );
+app.delete("/api/notes/:id", function (req, res) {
+    let jsonFilePath = path.join(__dirname, "/db/db.json");
+    for (let i = 0; i < database.length; i++) {
 
+        if (database[i].id == req.params.id) {
+            database.splice(i, 1);
             break;
         }
     }
-}
 
-app.delete('/api/notes/:id', (req, res) => {
-    deleteNote(req.params.id, noteData);
-    res.json(true);
+    fs.writeFileSync(jsonFilePath, JSON.stringify(database), function (err) {
+
+        if (err) {
+            return console.log(err);
+        } else {
+            console.log("Note has been deleted!");
+        }
+    });
+    res.json(database);
 });
 
-
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, './public/index.html'));
-});
 
 
 app.listen(PORT, () => console.log(`Listening on port http://localhost:${PORT}`));
