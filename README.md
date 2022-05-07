@@ -15,12 +15,19 @@ AS a small business owner I want to be able to write and save notes so that I ca
 
 
 ## Built with
-* Visual Studio Code
 * Javascript 
-* Node.js
-* Inquirer - npm
+* Node
+* Express
+* Heroku
+* Inquirer
+* Bootstrap
+* HTML
+* CSS
+* JSON
 
+# Deployable Link
+https://quiet-earth-95705.herokuapp.com/
 
-## Preview:
-![screenshot]() 
-
+## Screenshot:
+![screenshot](public/assets/images/mainpage.png)
+![screenshot](public/assets/images/secondpage.png)
