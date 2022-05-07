@@ -61,41 +61,26 @@ app.post('/api/notes', (req, res) => {
 });
 
 
-app.delete("/api/notes/:id", (req, res) => {
-    let noteList = JSON.parse(fs.readFileSync("./db/db.json", "utf8"));
-    let noteId = (req.params.id).toString();
+function deleteNote(id, notesArray) {
+    for (let i = 0; i < notesArray.length; i++) {
+        let note = notesArray[i];
 
-    //filter all notes that does not have matching id and saved them as a new array
-    //the matching array will be deleted
-    noteList = noteList.filter(selected => {
-        return selected.id != noteId;
-    })
+        if (note.id == id) {
+            notesArray.splice(i, 1);
+            fs.writeFileSync(
+                path.join(__dirname, './db/db.json'),
+                JSON.stringify(notesArray, null, 2)
+            );
 
-    //write the updated data to db.json and display the updated note
-    fs.writeFileSync("./db/db.json", JSON.stringify(noteList));
-    res.json(noteList);
+            break;
+        }
+    }
+}
+
+app.delete('/api/notes/:id', (req, res) => {
+    deleteNote(req.params.id, noteData);
+    res.json(true);
 });
-
-// function deleteNote(id, notesArray) {
-//     for (let i = 0; i < notesArray.length; i++) {
-//         let note = notesArray[i];
-
-//         if (note.id == id) {
-//             notesArray.splice(i, 1);
-//             fs.writeFileSync(
-//                 path.join(__dirname, './db/db.json'),
-//                 JSON.stringify(notesArray, null, 2)
-//             );
-
-//             break;
-//         }
-//     }
-// }
-
-// app.delete('/api/notes/:id', (req, res) => {
-//     deleteNote(req.params.id, noteData);
-//     res.json(true);
-// });
 
 
 app.listen(PORT, () => console.log(`Listening on port http://localhost:${PORT}`));
