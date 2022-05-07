@@ -13,6 +13,10 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(express.static('public'));
 
+app.get('/api/notes', (req, res) => {
+    res.json(noteData.slice(1));
+});
+
 
 // route to main page
 app.get('/', function (req, res) {
